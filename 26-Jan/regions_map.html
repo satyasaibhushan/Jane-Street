@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_67eef72ceb9f3588f166b8d0d531d8e0 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_67eef72ceb9f3588f166b8d0d531d8e0" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_67eef72ceb9f3588f166b8d0d531d8e0 = L.map(
+                "map_67eef72ceb9f3588f166b8d0d531d8e0",
+                {
+                    center: [10.142, 1.8276041666666691],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 2,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_5cf73089c48cf77407812d3b4f2c68a4 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_5cf73089c48cf77407812d3b4f2c68a4.addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+            var circle_marker_06a80085881351f606a80cca4d6eaa7d = L.circleMarker(
+                [32.7607, -16.9595],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_b4524a94acb0f35442717c1cb253d6b5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c7e0923161542adf01be90e9145d4d3c = $(`<div id="html_c7e0923161542adf01be90e9145d4d3c" style="width: 100.0%; height: 100.0%;">             <b>Madeira</b><br>             Coordinates: 32° 45' 38.52" N, 16° 57' 34.20" W<br>             Decimal: (32.760700, -16.959500)<br>             Timezone: Atlantic/Madeira<br>GMT Offset: +0.00 hours</div>`)[0];
+                popup_b4524a94acb0f35442717c1cb253d6b5.setContent(html_c7e0923161542adf01be90e9145d4d3c);
+            
+        
+
+        circle_marker_06a80085881351f606a80cca4d6eaa7d.bindPopup(popup_b4524a94acb0f35442717c1cb253d6b5)
+        ;
+
+        
+    
+    
+            circle_marker_06a80085881351f606a80cca4d6eaa7d.bindTooltip(
+                `<div>
+                     Madeira (Atlantic/Madeira)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e84a952b66f024d3efbeb75f4a750814 = L.circleMarker(
+                [36.7538, 3.0588],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_474eda79639d63655f33eed421792573 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5ffa6ccf3ad080638d8220e3ec8be430 = $(`<div id="html_5ffa6ccf3ad080638d8220e3ec8be430" style="width: 100.0%; height: 100.0%;">             <b>Algiers</b><br>             Coordinates: 36° 45' 13.68" N, 3° 3' 31.68" E<br>             Decimal: (36.753800, 3.058800)<br>             Timezone: Africa/Algiers<br>GMT Offset: +1.00 hours</div>`)[0];
+                popup_474eda79639d63655f33eed421792573.setContent(html_5ffa6ccf3ad080638d8220e3ec8be430);
+            
+        
+
+        circle_marker_e84a952b66f024d3efbeb75f4a750814.bindPopup(popup_474eda79639d63655f33eed421792573)
+        ;
+
+        
+    
+    
+            circle_marker_e84a952b66f024d3efbeb75f4a750814.bindTooltip(
+                `<div>
+                     Algiers (Africa/Algiers)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1c2ca936a98d86ab3fe99db6a03da132 = L.circleMarker(
+                [30.0444, 31.2357],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_82b3ab0a3b5e777b08cd6817e0eef5b5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1afebfcb467eb064001cc1981eaafbaf = $(`<div id="html_1afebfcb467eb064001cc1981eaafbaf" style="width: 100.0%; height: 100.0%;">             <b>Cairo</b><br>             Coordinates: 30° 2' 39.84" N, 31° 14' 8.52" E<br>             Decimal: (30.044400, 31.235700)<br>             Timezone: Africa/Cairo<br>GMT Offset: +2.00 hours</div>`)[0];
+                popup_82b3ab0a3b5e777b08cd6817e0eef5b5.setContent(html_1afebfcb467eb064001cc1981eaafbaf);
+            
+        
+
+        circle_marker_1c2ca936a98d86ab3fe99db6a03da132.bindPopup(popup_82b3ab0a3b5e777b08cd6817e0eef5b5)
+        ;
+
+        
+    
+    
+            circle_marker_1c2ca936a98d86ab3fe99db6a03da132.bindTooltip(
+                `<div>
+                     Cairo (Africa/Cairo)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ad513721964dfd5a7b63c8b02f6f99fe = L.circleMarker(
+                [-1.2921, 36.8219],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "purple", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_0c5d5c8f7de1c84708edf1bf1b632e8d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e1a7fa34277b3a5757feafe11d1b97e4 = $(`<div id="html_e1a7fa34277b3a5757feafe11d1b97e4" style="width: 100.0%; height: 100.0%;">             <b>Nairobi</b><br>             Coordinates: 1° 17' 31.56" S, 36° 49' 18.84" E<br>             Decimal: (-1.292100, 36.821900)<br>             Timezone: Africa/Nairobi<br>GMT Offset: +3.00 hours</div>`)[0];
+                popup_0c5d5c8f7de1c84708edf1bf1b632e8d.setContent(html_e1a7fa34277b3a5757feafe11d1b97e4);
+            
+        
+
+        circle_marker_ad513721964dfd5a7b63c8b02f6f99fe.bindPopup(popup_0c5d5c8f7de1c84708edf1bf1b632e8d)
+        ;
+
+        
+    
+    
+            circle_marker_ad513721964dfd5a7b63c8b02f6f99fe.bindTooltip(
+                `<div>
+                     Nairobi (Africa/Nairobi)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_428a3213c1202a0b1f5b851649f8be95 = L.circleMarker(
+                [40.4093, 49.8671],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_92f7b3f402ef3649a7c1207fbc978a60 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0259f08bca2a7a6ea8414ac13829f827 = $(`<div id="html_0259f08bca2a7a6ea8414ac13829f827" style="width: 100.0%; height: 100.0%;">             <b>Baku</b><br>             Coordinates: 40° 24' 33.48" N, 49° 52' 1.56" E<br>             Decimal: (40.409300, 49.867100)<br>             Timezone: Asia/Baku<br>GMT Offset: +4.00 hours</div>`)[0];
+                popup_92f7b3f402ef3649a7c1207fbc978a60.setContent(html_0259f08bca2a7a6ea8414ac13829f827);
+            
+        
+
+        circle_marker_428a3213c1202a0b1f5b851649f8be95.bindPopup(popup_92f7b3f402ef3649a7c1207fbc978a60)
+        ;
+
+        
+    
+    
+            circle_marker_428a3213c1202a0b1f5b851649f8be95.bindTooltip(
+                `<div>
+                     Baku (Asia/Baku)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2b463ef025866b6a014b458b039c10ea = L.circleMarker(
+                [56.8389, 60.6057],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkred", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_f0a952f5c9916ec1ef0a6b5cd44ec8d5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9035de78548e5e8a4f78a2c9ca04a155 = $(`<div id="html_9035de78548e5e8a4f78a2c9ca04a155" style="width: 100.0%; height: 100.0%;">             <b>Yekaterinburg</b><br>             Coordinates: 56° 50' 20.04" N, 60° 36' 20.52" E<br>             Decimal: (56.838900, 60.605700)<br>             Timezone: Asia/Yekaterinburg<br>GMT Offset: +5.00 hours</div>`)[0];
+                popup_f0a952f5c9916ec1ef0a6b5cd44ec8d5.setContent(html_9035de78548e5e8a4f78a2c9ca04a155);
+            
+        
+
+        circle_marker_2b463ef025866b6a014b458b039c10ea.bindPopup(popup_f0a952f5c9916ec1ef0a6b5cd44ec8d5)
+        ;
+
+        
+    
+    
+            circle_marker_2b463ef025866b6a014b458b039c10ea.bindTooltip(
+                `<div>
+                     Yekaterinburg (Asia/Yekaterinburg)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_77b540b6fa714406cb7bd0e3bd714442 = L.circleMarker(
+                [42.8746, 74.5698],
+                {"bubblingMouseEvents": true, "color": "lightred", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightred", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_6d2480db82b7a3f25c9ba6729c931271 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b5cf91b9742b34a515eade658dfc7c28 = $(`<div id="html_b5cf91b9742b34a515eade658dfc7c28" style="width: 100.0%; height: 100.0%;">             <b>Bishkek</b><br>             Coordinates: 42° 52' 28.56" N, 74° 34' 11.28" E<br>             Decimal: (42.874600, 74.569800)<br>             Timezone: Asia/Bishkek<br>GMT Offset: +6.00 hours</div>`)[0];
+                popup_6d2480db82b7a3f25c9ba6729c931271.setContent(html_b5cf91b9742b34a515eade658dfc7c28);
+            
+        
+
+        circle_marker_77b540b6fa714406cb7bd0e3bd714442.bindPopup(popup_6d2480db82b7a3f25c9ba6729c931271)
+        ;
+
+        
+    
+    
+            circle_marker_77b540b6fa714406cb7bd0e3bd714442.bindTooltip(
+                `<div>
+                     Bishkek (Asia/Bishkek)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6be7e5e3aba6d0879607f0791d2f53db = L.circleMarker(
+                [13.7563, 100.5018],
+                {"bubblingMouseEvents": true, "color": "beige", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "beige", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_72b11d18808d497105b40f8d2962a9df = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fc98e2287743de4251fdbea567830549 = $(`<div id="html_fc98e2287743de4251fdbea567830549" style="width: 100.0%; height: 100.0%;">             <b>Bangkok</b><br>             Coordinates: 13° 45' 22.68" N, 100° 30' 6.48" E<br>             Decimal: (13.756300, 100.501800)<br>             Timezone: Asia/Bangkok<br>GMT Offset: +7.00 hours</div>`)[0];
+                popup_72b11d18808d497105b40f8d2962a9df.setContent(html_fc98e2287743de4251fdbea567830549);
+            
+        
+
+        circle_marker_6be7e5e3aba6d0879607f0791d2f53db.bindPopup(popup_72b11d18808d497105b40f8d2962a9df)
+        ;
+
+        
+    
+    
+            circle_marker_6be7e5e3aba6d0879607f0791d2f53db.bindTooltip(
+                `<div>
+                     Bangkok (Asia/Bangkok)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f54dbc092dc68492f1dec1cf18d33312 = L.circleMarker(
+                [31.2304, 121.4737],
+                {"bubblingMouseEvents": true, "color": "darkblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_f4255312be3c0cf367260486c7c588f9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c6f08f1bcb03c9e5dce87fe97f1162cd = $(`<div id="html_c6f08f1bcb03c9e5dce87fe97f1162cd" style="width: 100.0%; height: 100.0%;">             <b>Shanghai</b><br>             Coordinates: 31° 13' 49.44" N, 121° 28' 25.32" E<br>             Decimal: (31.230400, 121.473700)<br>             Timezone: Asia/Shanghai<br>GMT Offset: +8.00 hours</div>`)[0];
+                popup_f4255312be3c0cf367260486c7c588f9.setContent(html_c6f08f1bcb03c9e5dce87fe97f1162cd);
+            
+        
+
+        circle_marker_f54dbc092dc68492f1dec1cf18d33312.bindPopup(popup_f4255312be3c0cf367260486c7c588f9)
+        ;
+
+        
+    
+    
+            circle_marker_f54dbc092dc68492f1dec1cf18d33312.bindTooltip(
+                `<div>
+                     Shanghai (Asia/Shanghai)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1f073beeaa29ce264f1906f145906a49 = L.circleMarker(
+                [-2.5916, 140.669],
+                {"bubblingMouseEvents": true, "color": "darkgreen", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkgreen", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_72b5b108b7f9c338c01a794c3b65441b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_64f1e7c4b586d1989b2a2bfeed945990 = $(`<div id="html_64f1e7c4b586d1989b2a2bfeed945990" style="width: 100.0%; height: 100.0%;">             <b>Jayapura</b><br>             Coordinates: 2° 35' 29.76" S, 140° 40' 8.40" E<br>             Decimal: (-2.591600, 140.669000)<br>             Timezone: Asia/Jayapura<br>GMT Offset: +9.00 hours</div>`)[0];
+                popup_72b5b108b7f9c338c01a794c3b65441b.setContent(html_64f1e7c4b586d1989b2a2bfeed945990);
+            
+        
+
+        circle_marker_1f073beeaa29ce264f1906f145906a49.bindPopup(popup_72b5b108b7f9c338c01a794c3b65441b)
+        ;
+
+        
+    
+    
+            circle_marker_1f073beeaa29ce264f1906f145906a49.bindTooltip(
+                `<div>
+                     Jayapura (Asia/Jayapura)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9f2c81af5f1e6b2b84a5847d14c14b89 = L.circleMarker(
+                [-27.4698, 153.0251],
+                {"bubblingMouseEvents": true, "color": "cadetblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cadetblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_e8055be193b98070d54d73901dc0802f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f30f8f6a41efec2c6440e7c7a33b0939 = $(`<div id="html_f30f8f6a41efec2c6440e7c7a33b0939" style="width: 100.0%; height: 100.0%;">             <b>Brisbane</b><br>             Coordinates: 27° 28' 11.28" S, 153° 1' 30.36" E<br>             Decimal: (-27.469800, 153.025100)<br>             Timezone: Australia/Brisbane<br>GMT Offset: +10.00 hours</div>`)[0];
+                popup_e8055be193b98070d54d73901dc0802f.setContent(html_f30f8f6a41efec2c6440e7c7a33b0939);
+            
+        
+
+        circle_marker_9f2c81af5f1e6b2b84a5847d14c14b89.bindPopup(popup_e8055be193b98070d54d73901dc0802f)
+        ;
+
+        
+    
+    
+            circle_marker_9f2c81af5f1e6b2b84a5847d14c14b89.bindTooltip(
+                `<div>
+                     Brisbane (Australia/Brisbane)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_992a8ae0ea90d7561a35ca89a4389670 = L.circleMarker(
+                [-6.2167, 155.55],
+                {"bubblingMouseEvents": true, "color": "darkpurple", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkpurple", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_ec4727364203673e1876054a7614652e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_67cdc7f5abef019b5ad1c83ec6ed564c = $(`<div id="html_67cdc7f5abef019b5ad1c83ec6ed564c" style="width: 100.0%; height: 100.0%;">             <b>Bougainville</b><br>             Coordinates: 6° 13' 0.12" S, 155° 33' 0.00" E<br>             Decimal: (-6.216700, 155.550000)<br>             Timezone: Pacific/Bougainville<br>GMT Offset: +11.00 hours</div>`)[0];
+                popup_ec4727364203673e1876054a7614652e.setContent(html_67cdc7f5abef019b5ad1c83ec6ed564c);
+            
+        
+
+        circle_marker_992a8ae0ea90d7561a35ca89a4389670.bindPopup(popup_ec4727364203673e1876054a7614652e)
+        ;
+
+        
+    
+    
+            circle_marker_992a8ae0ea90d7561a35ca89a4389670.bindTooltip(
+                `<div>
+                     Bougainville (Pacific/Bougainville)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7137a5fb491e155e62a1186e0786d442 = L.circleMarker(
+                [-36.8509, 174.7645],
+                {"bubblingMouseEvents": true, "color": "pink", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "pink", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_00a3d45266776a54ee3ec1533eff4520 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e8f048fb065236d41ef48069dc7c90f7 = $(`<div id="html_e8f048fb065236d41ef48069dc7c90f7" style="width: 100.0%; height: 100.0%;">             <b>Auckland</b><br>             Coordinates: 36° 51' 3.24" S, 174° 45' 52.20" E<br>             Decimal: (-36.850900, 174.764500)<br>             Timezone: Pacific/Auckland<br>GMT Offset: +13.00 hours</div>`)[0];
+                popup_00a3d45266776a54ee3ec1533eff4520.setContent(html_e8f048fb065236d41ef48069dc7c90f7);
+            
+        
+
+        circle_marker_7137a5fb491e155e62a1186e0786d442.bindPopup(popup_00a3d45266776a54ee3ec1533eff4520)
+        ;
+
+        
+    
+    
+            circle_marker_7137a5fb491e155e62a1186e0786d442.bindTooltip(
+                `<div>
+                     Auckland (Pacific/Auckland)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b851a5e637cae2dd978debf4ec5d648c = L.circleMarker(
+                [-19.0544, -169.8672],
+                {"bubblingMouseEvents": true, "color": "lightblue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_e2af7f1b6b53855665445e78bcdf0133 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8c9cb0c31ba57f4340bb25efaca7debb = $(`<div id="html_8c9cb0c31ba57f4340bb25efaca7debb" style="width: 100.0%; height: 100.0%;">             <b>Niue</b><br>             Coordinates: 19° 3' 15.84" S, 169° 52' 1.92" W<br>             Decimal: (-19.054400, -169.867200)<br>             Timezone: Pacific/Niue<br>GMT Offset: -11.00 hours</div>`)[0];
+                popup_e2af7f1b6b53855665445e78bcdf0133.setContent(html_8c9cb0c31ba57f4340bb25efaca7debb);
+            
+        
+
+        circle_marker_b851a5e637cae2dd978debf4ec5d648c.bindPopup(popup_e2af7f1b6b53855665445e78bcdf0133)
+        ;
+
+        
+    
+    
+            circle_marker_b851a5e637cae2dd978debf4ec5d648c.bindTooltip(
+                `<div>
+                     Niue (Pacific/Niue)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_975292737ae8518af7c97f3ad04b736a = L.circleMarker(
+                [-21.2292, -159.7763],
+                {"bubblingMouseEvents": true, "color": "lightgreen", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightgreen", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_0ffdc52ddb825e3c04c8e5465bcd44cb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7aa006217f4119250bb35ba988740f13 = $(`<div id="html_7aa006217f4119250bb35ba988740f13" style="width: 100.0%; height: 100.0%;">             <b>Rarotonga</b><br>             Coordinates: 21° 13' 45.12" S, 159° 46' 34.68" W<br>             Decimal: (-21.229200, -159.776300)<br>             Timezone: Pacific/Rarotonga<br>GMT Offset: -10.00 hours</div>`)[0];
+                popup_0ffdc52ddb825e3c04c8e5465bcd44cb.setContent(html_7aa006217f4119250bb35ba988740f13);
+            
+        
+
+        circle_marker_975292737ae8518af7c97f3ad04b736a.bindPopup(popup_0ffdc52ddb825e3c04c8e5465bcd44cb)
+        ;
+
+        
+    
+    
+            circle_marker_975292737ae8518af7c97f3ad04b736a.bindTooltip(
+                `<div>
+                     Rarotonga (Pacific/Rarotonga)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e7ae9d9197a458b985c38bb00857104a = L.circleMarker(
+                [-23.12, -134.97],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_6f92583ed36180f96b15883f935a275e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_48488f3ed1fbb25c9d767f1741e7b6fe = $(`<div id="html_48488f3ed1fbb25c9d767f1741e7b6fe" style="width: 100.0%; height: 100.0%;">             <b>Gambier Islands</b><br>             Coordinates: 23° 7' 12.00" S, 134° 58' 12.00" W<br>             Decimal: (-23.120000, -134.970000)<br>             Timezone: Pacific/Gambier<br>GMT Offset: -9.00 hours</div>`)[0];
+                popup_6f92583ed36180f96b15883f935a275e.setContent(html_48488f3ed1fbb25c9d767f1741e7b6fe);
+            
+        
+
+        circle_marker_e7ae9d9197a458b985c38bb00857104a.bindPopup(popup_6f92583ed36180f96b15883f935a275e)
+        ;
+
+        
+    
+    
+            circle_marker_e7ae9d9197a458b985c38bb00857104a.bindTooltip(
+                `<div>
+                     Gambier Islands (Pacific/Gambier)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7d465aedc0f369e165b3beb812e9f17e = L.circleMarker(
+                [32.5149, -117.0382],
+                {"bubblingMouseEvents": true, "color": "black", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "black", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_78982ed1c1707b66a7967dcfa6b7ab21 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4c172d4ab631a92ba4dfe586a7ab38f3 = $(`<div id="html_4c172d4ab631a92ba4dfe586a7ab38f3" style="width: 100.0%; height: 100.0%;">             <b>Tijuana</b><br>             Coordinates: 32° 30' 53.64" N, 117° 2' 17.52" W<br>             Decimal: (32.514900, -117.038200)<br>             Timezone: America/Tijuana<br>GMT Offset: -8.00 hours</div>`)[0];
+                popup_78982ed1c1707b66a7967dcfa6b7ab21.setContent(html_4c172d4ab631a92ba4dfe586a7ab38f3);
+            
+        
+
+        circle_marker_7d465aedc0f369e165b3beb812e9f17e.bindPopup(popup_78982ed1c1707b66a7967dcfa6b7ab21)
+        ;
+
+        
+    
+    
+            circle_marker_7d465aedc0f369e165b3beb812e9f17e.bindTooltip(
+                `<div>
+                     Tijuana (America/Tijuana)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_368dfed11448c92eae776027a75c8723 = L.circleMarker(
+                [53.5461, -113.4938],
+                {"bubblingMouseEvents": true, "color": "white", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "white", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_3719b493162005fbda117987e036e379 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5add495c362da92db5b37bf01d3092fe = $(`<div id="html_5add495c362da92db5b37bf01d3092fe" style="width: 100.0%; height: 100.0%;">             <b>Edmonton</b><br>             Coordinates: 53° 32' 45.96" N, 113° 29' 37.68" W<br>             Decimal: (53.546100, -113.493800)<br>             Timezone: America/Edmonton<br>GMT Offset: -7.00 hours</div>`)[0];
+                popup_3719b493162005fbda117987e036e379.setContent(html_5add495c362da92db5b37bf01d3092fe);
+            
+        
+
+        circle_marker_368dfed11448c92eae776027a75c8723.bindPopup(popup_3719b493162005fbda117987e036e379)
+        ;
+
+        
+    
+    
+            circle_marker_368dfed11448c92eae776027a75c8723.bindTooltip(
+                `<div>
+                     Edmonton (America/Edmonton)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fa67d513f83bfe4b4b9e7cdfffe81383 = L.circleMarker(
+                [-0.9538, -90.9656],
+                {"bubblingMouseEvents": true, "color": "lightgray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightgray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_8d378d04e0991ac2bb0c243bcdfcc767 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_135d33ee3cfd0a194e08bc772e88e207 = $(`<div id="html_135d33ee3cfd0a194e08bc772e88e207" style="width: 100.0%; height: 100.0%;">             <b>Galapagos Islands</b><br>             Coordinates: 0° 57' 13.68" S, 90° 57' 56.16" W<br>             Decimal: (-0.953800, -90.965600)<br>             Timezone: Pacific/Galapagos<br>GMT Offset: -6.00 hours</div>`)[0];
+                popup_8d378d04e0991ac2bb0c243bcdfcc767.setContent(html_135d33ee3cfd0a194e08bc772e88e207);
+            
+        
+
+        circle_marker_fa67d513f83bfe4b4b9e7cdfffe81383.bindPopup(popup_8d378d04e0991ac2bb0c243bcdfcc767)
+        ;
+
+        
+    
+    
+            circle_marker_fa67d513f83bfe4b4b9e7cdfffe81383.bindTooltip(
+                `<div>
+                     Galapagos Islands (Pacific/Galapagos)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3a91841316b33a98ca02a9531bf9c2de = L.circleMarker(
+                [-2.1709, -79.9224],
+                {"bubblingMouseEvents": true, "color": "darkgray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "darkgray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_9bdb2822b31cf4f41e92e9034cb6d3eb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9ff9cc512f7187aa03fc1d8068a9c288 = $(`<div id="html_9ff9cc512f7187aa03fc1d8068a9c288" style="width: 100.0%; height: 100.0%;">             <b>Guayaquil</b><br>             Coordinates: 2° 10' 15.24" S, 79° 55' 20.64" W<br>             Decimal: (-2.170900, -79.922400)<br>             Timezone: America/Guayaquil<br>GMT Offset: -5.00 hours</div>`)[0];
+                popup_9bdb2822b31cf4f41e92e9034cb6d3eb.setContent(html_9ff9cc512f7187aa03fc1d8068a9c288);
+            
+        
+
+        circle_marker_3a91841316b33a98ca02a9531bf9c2de.bindPopup(popup_9bdb2822b31cf4f41e92e9034cb6d3eb)
+        ;
+
+        
+    
+    
+            circle_marker_3a91841316b33a98ca02a9531bf9c2de.bindTooltip(
+                `<div>
+                     Guayaquil (America/Guayaquil)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ed15ea8667201720ae7dfaf2918ca26f = L.circleMarker(
+                [14.6415, -61.0242],
+                {"bubblingMouseEvents": true, "color": "yellow", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "yellow", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_6bc64e8f81a8adcc9522212e17f68dcf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9058f105f09761cb1842d4fc5d865a01 = $(`<div id="html_9058f105f09761cb1842d4fc5d865a01" style="width: 100.0%; height: 100.0%;">             <b>Martinique</b><br>             Coordinates: 14° 38' 29.40" N, 61° 1' 27.12" W<br>             Decimal: (14.641500, -61.024200)<br>             Timezone: America/Martinique<br>GMT Offset: -4.00 hours</div>`)[0];
+                popup_6bc64e8f81a8adcc9522212e17f68dcf.setContent(html_9058f105f09761cb1842d4fc5d865a01);
+            
+        
+
+        circle_marker_ed15ea8667201720ae7dfaf2918ca26f.bindPopup(popup_6bc64e8f81a8adcc9522212e17f68dcf)
+        ;
+
+        
+    
+    
+            circle_marker_ed15ea8667201720ae7dfaf2918ca26f.bindTooltip(
+                `<div>
+                     Martinique (America/Martinique)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ef26cc6bad5bd567faca980242959629 = L.circleMarker(
+                [-34.9011, -56.1645],
+                {"bubblingMouseEvents": true, "color": "cyan", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "cyan", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_97c091fc1ce51b150b6f03c5b40181a2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a7b926de6ced2dd0499de5ca49b38170 = $(`<div id="html_a7b926de6ced2dd0499de5ca49b38170" style="width: 100.0%; height: 100.0%;">             <b>Montevideo</b><br>             Coordinates: 34° 54' 3.96" S, 56° 9' 52.20" W<br>             Decimal: (-34.901100, -56.164500)<br>             Timezone: America/Montevideo<br>GMT Offset: -3.00 hours</div>`)[0];
+                popup_97c091fc1ce51b150b6f03c5b40181a2.setContent(html_a7b926de6ced2dd0499de5ca49b38170);
+            
+        
+
+        circle_marker_ef26cc6bad5bd567faca980242959629.bindPopup(popup_97c091fc1ce51b150b6f03c5b40181a2)
+        ;
+
+        
+    
+    
+            circle_marker_ef26cc6bad5bd567faca980242959629.bindTooltip(
+                `<div>
+                     Montevideo (America/Montevideo)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3aebf2555cde7f9280b2092494fd5220 = L.circleMarker(
+                [-3.8536, -32.4233],
+                {"bubblingMouseEvents": true, "color": "magenta", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "magenta", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_250021ad32e9ee3ec0bc0d05efea2d06 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fe63e44eb32edd2a66ea47f83e38d796 = $(`<div id="html_fe63e44eb32edd2a66ea47f83e38d796" style="width: 100.0%; height: 100.0%;">             <b>Noronha</b><br>             Coordinates: 3° 51' 12.96" S, 32° 25' 23.88" W<br>             Decimal: (-3.853600, -32.423300)<br>             Timezone: America/Noronha<br>GMT Offset: -2.00 hours</div>`)[0];
+                popup_250021ad32e9ee3ec0bc0d05efea2d06.setContent(html_fe63e44eb32edd2a66ea47f83e38d796);
+            
+        
+
+        circle_marker_3aebf2555cde7f9280b2092494fd5220.bindPopup(popup_250021ad32e9ee3ec0bc0d05efea2d06)
+        ;
+
+        
+    
+    
+            circle_marker_3aebf2555cde7f9280b2092494fd5220.bindTooltip(
+                `<div>
+                     Noronha (America/Noronha)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c3765f09223c8ece6af9c6658f13ec9b = L.circleMarker(
+                [37.7412, -25.6756],
+                {"bubblingMouseEvents": true, "color": "lime", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lime", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 10, "stroke": true, "weight": 2}
+            ).addTo(map_67eef72ceb9f3588f166b8d0d531d8e0);
+        
+    
+        var popup_b402c0d19041bf00c51ec73ba42b15a4 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b4a88a3740e7282aafb44043fe768bf2 = $(`<div id="html_b4a88a3740e7282aafb44043fe768bf2" style="width: 100.0%; height: 100.0%;">             <b>Azores</b><br>             Coordinates: 37° 44' 28.32" N, 25° 40' 32.16" W<br>             Decimal: (37.741200, -25.675600)<br>             Timezone: Atlantic/Azores<br>GMT Offset: -1.00 hours</div>`)[0];
+                popup_b402c0d19041bf00c51ec73ba42b15a4.setContent(html_b4a88a3740e7282aafb44043fe768bf2);
+            
+        
+
+        circle_marker_c3765f09223c8ece6af9c6658f13ec9b.bindPopup(popup_b402c0d19041bf00c51ec73ba42b15a4)
+        ;
+
+        
+    
+    
+            circle_marker_c3765f09223c8ece6af9c6658f13ec9b.bindTooltip(
+                `<div>
+                     Azores (Atlantic/Azores)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>

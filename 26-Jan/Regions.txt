@@ -1,0 +1,24 @@
+Madeira	32.7607	-16.9595
+Algiers	36.7538	3.0588
+Cairo	30.0444	31.2357
+Nairobi	-1.2921	36.8219
+Baku	40.4093	49.8671
+Yekaterinburg	56.8389	60.6057
+Bishkek	42.8746	74.5698
+Bangkok	13.7563	100.5018
+Shanghai	31.2304	121.4737
+Jayapura	-2.5916	140.6690
+Brisbane	-27.4698	153.0251
+Bougainville	-6.2167	155.5500
+Auckland	-36.8509	174.7645
+Niue	-19.0544	-169.8672
+Rarotonga	-21.2292	-159.7763
+Gambier Islands	-23.1200	-134.9700
+Tijuana	32.5149	-117.0382
+Edmonton	53.5461	-113.4938
+Galapagos Islands	-0.9538	-90.9656
+Guayaquil	-2.1709	-79.9224
+Martinique	14.6415	-61.0242
+Montevideo	-34.9011	-56.1645
+Noronha	-3.8536	-32.4233
+Azores	37.7412	-25.6756
