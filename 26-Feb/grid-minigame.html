@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Puzzle Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f8f6f4;
+            --bg-secondary: #ffffff;
+            --border-main: #1a1a1a;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b6b6b;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .info-icon {
+            position: absolute;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-icon:hover {
+            background: #f0f0f0;
+            border-color: var(--border-main);
+            transform: scale(1.05);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: var(--bg-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .input-group input {
+            width: 100px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.2s ease;
+            background: var(--bg-secondary);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--border-main);
+            box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+        }
+
+        .game-container {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: flex-start;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .blobs-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            overflow-y: auto;
+            max-height: calc(100vh - 160px);
+        }
+
+        #blobs-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            justify-items: center;
+        }
+
+        .blobs-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            text-align: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .blob {
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            cursor: grab;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            user-select: none;
+            position: relative;
+        }
+
+        .blob:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        .blob:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .blob.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .grid-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 1.5rem;
+        }
+
+        .reset-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .reset-buttons-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .reset-btn {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+        }
+
+        .reset-btn.soft {
+            background: #f0f0f0;
+            color: var(--text-primary);
+        }
+
+        .reset-btn.soft:hover {
+            background: #e0e0e0;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .reset-btn.hard {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .reset-btn.hard:hover {
+            background: #333;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
+        .grid {
+            display: inline-grid;
+            gap: 0;
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .cell {
+            border: 1.5px solid var(--border-main);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .cell[draggable="true"]:not(.locked) {
+            cursor: grab;
+        }
+
+        .cell[draggable="true"]:not(.locked):active {
+            cursor: grabbing;
+        }
+
+        .cell:hover {
+            background: #fafafa;
+        }
+
+        .cell.drag-over {
+            background: #f5f5f5;
+            transform: scale(0.95);
+        }
+
+        .cell.filled {
+            animation: fillCell 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .cell.locked::after {
+            content: '🔒';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.7em;
+            opacity: 0.8;
+            filter: grayscale(1);
+        }
+
+        .cell.removed {
+            animation: removeCell 0.2s ease;
+        }
+
+        @keyframes fillCell {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes removeCell {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            max-width: 500px;
+            width: 90%;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .modal-content {
+            font-size: 0.875rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .modal-content ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .modal-content li {
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .modal-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        kbd {
+            background: #f0f0f0;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'DM Sans', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+                gap: 0.5rem;
+            }
+
+            h1 {
+                font-size: 1.25rem;
+            }
+
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .blobs-sidebar {
+                flex-direction: row;
+                flex-wrap: wrap;
+                max-height: none;
+                overflow: visible;
+            }
+
+            .info-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Grid Puzzle</h1>
+        <div class="info-icon" id="info-icon" title="How to Play">?</div>
+    </div>
+
+    <div class="controls">
+        <div class="input-group">
+            <label for="rows">Rows</label>
+            <input type="number" id="rows" min="1" max="20" value="5">
+        </div>
+        <div class="input-group">
+            <label for="cols">Columns</label>
+            <input type="number" id="cols" min="1" max="20" value="5">
+        </div>
+        <div class="input-group">
+            <label for="numbers">Numbers</label>
+            <input type="number" id="numbers" min="1" max="20" value="6">
+        </div>
+        <div class="reset-buttons">
+            <label style="opacity: 0; height: 1.25rem;">Actions</label>
+            <div class="reset-buttons-row">
+                <button class="reset-btn soft" id="soft-reset">Soft Reset</button>
+                <button class="reset-btn hard" id="hard-reset">Hard Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="blobs-sidebar">
+            <div class="blobs-title">Pieces</div>
+            <div id="blobs-container"></div>
+        </div>
+
+        <div class="grid-wrapper">
+            <div id="grid" class="grid"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <div class="modal-title">How to Play</div>
+            <div class="modal-content">
+                <ul>
+                    <li>Drag pieces from the left onto the grid</li>
+                    <li><kbd>Cmd/Ctrl</kbd> + Click to lock a cell</li>
+                    <li><kbd>Shift</kbd> + Click to clear a cell</li>
+                    <li>Soft Reset clears unlocked cells</li>
+                    <li>Hard Reset clears everything</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Color palette - soft, distinct pastels
+        const COLORS = [
+            '#FFB5C5', // soft pink
+            '#B5E7FF', // soft blue
+            '#C5FFB5', // soft green
+            '#FFE5B5', // soft peach
+            '#E5B5FF', // soft purple
+            '#FFD4B5', // soft orange
+            '#B5FFF0', // soft cyan
+            '#FFB5E0', // soft magenta
+            '#D4FFB5', // soft lime
+            '#B5D4FF', // soft periwinkle
+            '#FFE0B5', // soft yellow
+            '#FFB5B5', // soft coral
+            '#B5FFD4', // soft mint
+            '#D4B5FF', // soft lavender
+            '#FFFFB5', // soft cream
+            '#FFB5FF', // soft fuchsia
+            '#B5FFFF', // soft aqua
+            '#FFD0B5', // soft salmon
+            '#E0FFB5', // soft chartreuse
+            '#B5E0FF', // soft sky blue
+        ];
+
+        let gridData = [];
+        let blobColors = [];
+
+        // Save state to localStorage (excluding colors - they regenerate on load)
+        function saveState() {
+            // Remove color property from gridData before saving
+            const gridDataWithoutColors = gridData.map(row =>
+                row.map(cell => ({
+                    number: cell.number,
+                    locked: cell.locked
+                    // Exclude color
+                }))
+            );
+
+            const state = {
+                gridData: gridDataWithoutColors,
+                rows: document.getElementById('rows').value,
+                cols: document.getElementById('cols').value,
+                numbers: document.getElementById('numbers').value
+            };
+            localStorage.setItem('gridPuzzleState', JSON.stringify(state));
+        }
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('gridPuzzleState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                gridData = state.gridData || [];
+                if (state.rows) document.getElementById('rows').value = state.rows;
+                if (state.cols) document.getElementById('cols').value = state.cols;
+                if (state.numbers) document.getElementById('numbers').value = state.numbers;
+                return true;
+            }
+            return false;
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function generateBlobs() {
+            const numbers = parseInt(document.getElementById('numbers').value);
+            const blobsContainer = document.getElementById('blobs-container');
+            blobsContainer.innerHTML = '';
+
+            // Shuffle colors and take the required amount
+            blobColors = shuffleArray(COLORS).slice(0, numbers);
+
+            // Dynamic blob sizing based on number count
+            const blobSize = numbers <= 6 ? 60 : numbers <= 12 ? 50 : 40;
+            const fontSize = numbers <= 6 ? 1.5 : numbers <= 12 ? 1.25 : 1;
+
+            for (let i = 1; i <= numbers; i++) {
+                const blob = document.createElement('div');
+                blob.className = 'blob';
+                blob.textContent = i;
+                blob.style.backgroundColor = blobColors[i - 1];
+                blob.style.width = `${blobSize}px`;
+                blob.style.height = `${blobSize}px`;
+                blob.style.fontSize = `${fontSize}rem`;
+                blob.draggable = true;
+                blob.dataset.number = i;
+                blob.dataset.color = blobColors[i - 1];
+
+                blob.addEventListener('dragstart', handleDragStart);
+                blob.addEventListener('dragend', handleDragEnd);
+
+                blobsContainer.appendChild(blob);
+            }
+        }
+
+        function generateGrid() {
+            const rows = parseInt(document.getElementById('rows').value);
+            const cols = parseInt(document.getElementById('cols').value);
+            const grid = document.getElementById('grid');
+
+            // Save existing grid data
+            const oldGridData = gridData.length > 0 ? JSON.parse(JSON.stringify(gridData)) : null;
+
+            grid.innerHTML = '';
+
+            // Dynamic cell sizing to fit viewport
+            // Account for header, controls, and padding
+            const availableWidth = window.innerWidth - 200;
+            const availableHeight = window.innerHeight - 180; // Account for header + controls + spacing
+
+            // Calculate max cell size that fits both dimensions
+            // Account for grid padding (1rem) + grid-wrapper padding (1.5rem each side)
+            const maxCellWidth = Math.floor((availableWidth - 80) / cols);
+            const maxCellHeight = Math.floor((availableHeight - 80) / rows);
+            const cellSize = Math.min(maxCellWidth, maxCellHeight, 80); // Cap at 80px
+            const fontSize = cellSize * 0.4; // Font scales with cell size
+
+            grid.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, ${cellSize}px)`;
+
+            // Initialize or reinitialize gridData
+            gridData = Array(rows).fill(null).map(() =>
+                Array(cols).fill(null).map(() => ({ number: null, color: null, locked: false }))
+            );
+
+            // Restore old data if it exists and dimensions match
+            if (oldGridData && oldGridData.length === rows && oldGridData[0].length === cols) {
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        gridData[r][c] = oldGridData[r][c];
+                    }
+                }
+            }
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    cell.style.width = `${cellSize}px`;
+                    cell.style.height = `${cellSize}px`;
+                    cell.style.fontSize = `${fontSize}px`;
+                    cell.draggable = false; // Will be set to true when filled
+
+                    cell.addEventListener('dragover', handleDragOver);
+                    cell.addEventListener('dragleave', handleDragLeave);
+                    cell.addEventListener('drop', handleDrop);
+                    cell.addEventListener('click', handleCellClick);
+                    cell.addEventListener('dragstart', handleCellDragStart);
+                    cell.addEventListener('dragend', handleCellDragEnd);
+
+                    // Restore cell content if it exists
+                    if (gridData[r][c].number !== null) {
+                        const number = parseInt(gridData[r][c].number);
+                        const color = blobColors[number - 1]; // Use current blob color, not saved color
+                        cell.textContent = gridData[r][c].number;
+                        cell.style.backgroundColor = color;
+                        gridData[r][c].color = color; // Update gridData with new color
+                        cell.draggable = true;
+                        if (gridData[r][c].locked) {
+                            cell.classList.add('locked');
+                        }
+                    }
+
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function handleDragStart(e) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'copy';
+            e.dataTransfer.setData('number', e.target.dataset.number);
+            e.dataTransfer.setData('color', e.target.dataset.color);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleCellDragStart(e) {
+            const row = parseInt(e.target.dataset.row);
+            const col = parseInt(e.target.dataset.col);
+
+            // Only allow dragging if cell has content and is not locked
+            if (gridData[row][col].number === null || gridData[row][col].locked) {
+                e.preventDefault();
+                return;
+            }
+
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('number', gridData[row][col].number);
+            e.dataTransfer.setData('color', gridData[row][col].color);
+            e.dataTransfer.setData('sourceRow', row);
+            e.dataTransfer.setData('sourceCol', col);
+            e.dataTransfer.setData('fromCell', 'true');
+        }
+
+        function handleCellDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = e.dataTransfer.effectAllowed === 'move' ? 'move' : 'copy';
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const cell = e.currentTarget;
+            cell.classList.remove('drag-over');
+
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+
+            // Don't allow drop on locked cells
+            if (gridData[row][col].locked) {
+                return;
+            }
+
+            const number = e.dataTransfer.getData('number');
+            const color = e.dataTransfer.getData('color');
+            const fromCell = e.dataTransfer.getData('fromCell');
+
+            // If dragging from another cell, clear the source cell
+            if (fromCell === 'true') {
+                const sourceRow = parseInt(e.dataTransfer.getData('sourceRow'));
+                const sourceCol = parseInt(e.dataTransfer.getData('sourceCol'));
+
+                // Don't do anything if dropping on the same cell
+                if (sourceRow === row && sourceCol === col) {
+                    return;
+                }
+
+                // Clear source cell
+                const sourceCell = document.querySelector(`[data-row="${sourceRow}"][data-col="${sourceCol}"]`);
+                gridData[sourceRow][sourceCol].number = null;
+                gridData[sourceRow][sourceCol].color = null;
+                sourceCell.textContent = '';
+                sourceCell.style.backgroundColor = 'white';
+            }
+
+            // Set target cell
+            gridData[row][col].number = number;
+            gridData[row][col].color = color;
+
+            cell.textContent = number;
+            cell.style.backgroundColor = color;
+            cell.classList.add('filled');
+
+            // Update draggable attribute
+            cell.draggable = true;
+
+            setTimeout(() => cell.classList.remove('filled'), 300);
+
+            // Save state
+            saveState();
+        }
+
+        function handleCellClick(e) {
+            const cell = e.currentTarget;
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+
+            // Cmd/Ctrl + Click: Toggle lock
+            if (e.metaKey || e.ctrlKey) {
+                if (gridData[row][col].number !== null) {
+                    gridData[row][col].locked = !gridData[row][col].locked;
+                    cell.classList.toggle('locked');
+                    saveState();
+                }
+            }
+            // Shift + Click: Clear cell (if not locked)
+            else if (e.shiftKey) {
+                if (!gridData[row][col].locked) {
+                    clearCell(cell, row, col);
+                }
+            }
+        }
+
+        function clearCell(cell, row, col) {
+            if (gridData[row][col].number === null) return;
+
+            cell.classList.add('removed');
+
+            setTimeout(() => {
+                gridData[row][col].number = null;
+                gridData[row][col].color = null;
+                cell.textContent = '';
+                cell.style.backgroundColor = 'white';
+                cell.classList.remove('removed');
+                cell.draggable = false;
+                saveState();
+            }, 200);
+        }
+
+        function softReset() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+
+                if (!gridData[row][col].locked) {
+                    clearCell(cell, row, col);
+                }
+            });
+            // saveState is called within clearCell
+        }
+
+        function hardReset() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+
+                gridData[row][col].locked = false;
+                cell.classList.remove('locked');
+                clearCell(cell, row, col);
+            });
+            // saveState is called within clearCell
+        }
+
+        // Modal functionality
+        const infoIcon = document.getElementById('info-icon');
+        const modalOverlay = document.getElementById('modal-overlay');
+
+        infoIcon.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+
+        // Event listeners
+        document.getElementById('rows').addEventListener('change', () => {
+            generateGrid();
+            saveState();
+        });
+        document.getElementById('cols').addEventListener('change', () => {
+            generateGrid();
+            saveState();
+        });
+        document.getElementById('numbers').addEventListener('change', () => {
+            generateBlobs();
+            saveState();
+        });
+        document.getElementById('soft-reset').addEventListener('click', softReset);
+        document.getElementById('hard-reset').addEventListener('click', hardReset);
+
+        // Regenerate grid on window resize to maintain fit
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(generateGrid, 250);
+        });
+
+        // Initialize - load saved state first
+        loadState();
+        generateBlobs();
+        generateGrid();
+    </script>
+</body>
+</html>
