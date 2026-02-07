@@ -253,8 +253,104 @@
             box-shadow: var(--shadow-md);
         }
 
+        .reset-btn.solve {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .reset-btn.solve:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .reset-btn.solve:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .reset-btn:active {
             transform: translateY(0);
+        }
+
+        .debug-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-top: 0.35rem;
+        }
+
+        .debug-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .debug-panel {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding: 0.4rem 0.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--radius-sm);
+            background: #fafafa;
+        }
+
+        .debug-panel label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .debug-panel select {
+            padding: 0.35rem 0.5rem;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.85rem;
+        }
+
+        .cell.solving {
+            border: 2px solid #4CAF50;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .cell.trying {
+            border: 2px solid #FFA500;
+            background: #FFF3E0 !important;
+        }
+
+        .cell.backtracking {
+            border: 2px solid #f44336;
+            animation: shake 0.3s ease;
+        }
+
+        .cell.solved {
+            border: 2px solid #4CAF50;
+            animation: success 0.3s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-3px); }
+            75% { transform: translateX(3px); }
+        }
+
+        @keyframes success {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .grid {
@@ -476,7 +572,30 @@
             <div class="reset-buttons-row">
                 <button class="reset-btn soft" id="soft-reset">Soft Reset</button>
                 <button class="reset-btn hard" id="hard-reset">Hard Reset</button>
+                <button class="reset-btn solve" id="solve-btn">Solve</button>
+                <button class="reset-btn soft" id="validate-btn" style="background: #2196F3;">Validate</button>
             </div>
+            <div class="debug-controls">
+                <label class="debug-toggle">
+                    <input type="checkbox" id="debug-mode-toggle">
+                    Debug Mode
+                </label>
+                <div class="debug-panel" id="debug-panel">
+                    <label for="debug-12-select">12 Config</label>
+                    <select id="debug-12-select">
+                        <option value="0">Config 1</option>
+                        <option value="1">Config 2</option>
+                        <option value="2">Config 3</option>
+                        <option value="3">Config 4</option>
+                    </select>
+                    <label class="debug-toggle" style="text-transform:none; letter-spacing:normal;">
+                        <input type="checkbox" id="ui-check-toggle">
+                        UI Check
+                    </label>
+                    <button class="reset-btn soft" id="next-step-btn" type="button">Next Step</button>
+                </div>
+            </div>
+            <div id="solve-status" style="margin-top: 0.35rem; font-size: 0.85rem; color: var(--text-secondary); min-height: 1.2rem;"></div>
         </div>
     </div>
 
@@ -502,6 +621,15 @@
                     <li>Soft Reset clears unlocked cells</li>
                     <li>Hard Reset clears everything</li>
                 </ul>
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                    <strong>Puzzle Rules (for Solver):</strong>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>Value K appears exactly K times (1 once, 2 twice, etc.)</li>
+                        <li>All K cells form a connected region</li>
+                        <li>K-omino contains (K-1)-omino shape (with rotations/reflections)</li>
+                        <li>Cells can remain empty</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -816,6 +944,16 @@
             }, 200);
         }
 
+        function clearCellImmediate(cell, row, col) {
+            if (gridData[row][col].number === null) return;
+            gridData[row][col].number = null;
+            gridData[row][col].color = null;
+            cell.textContent = '';
+            cell.style.backgroundColor = 'white';
+            cell.classList.remove('removed');
+            cell.draggable = false;
+        }
+
         function softReset() {
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
@@ -827,6 +965,29 @@
                 }
             });
             // saveState is called within clearCell
+        }
+
+        function softResetImmediate(shouldSave = true) {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                if (!gridData[row][col].locked) {
+                    clearCellImmediate(cell, row, col);
+                }
+            });
+            if (shouldSave) saveState();
+        }
+
+        function softResetDataOnly() {
+            for (let r = 0; r < gridData.length; r++) {
+                for (let c = 0; c < gridData[0].length; c++) {
+                    if (!gridData[r][c].locked) {
+                        gridData[r][c].number = null;
+                        gridData[r][c].color = null;
+                    }
+                }
+            }
         }
 
         function hardReset() {
@@ -841,6 +1002,1342 @@
             });
             // saveState is called within clearCell
         }
+
+        // ==================== SOLVER FUNCTIONS ====================
+
+        let isSolving = false;
+        let solveDelay = 0; // ms delay for visualization (set >0 to see UI updates)
+        let shapeCache = new Map(); // Cache for shape containment checks
+        let transformCache = new Map(); // Cache transformed variants of normalized shapes
+        let stepCount = 0;
+        let maxSteps = 5000000; // Prevent infinite loops
+        let skipShapeCheck = false; // For testing - skip expensive containment check
+        let lastStopReason = '';
+        const containmentMode = 'shape'; // Enforce shape containment only (rotation/reflection/translation allowed)
+        let debugStepResolver = null;
+        const uiTimeSliceMs = 16; // Keep solve cooperative with browser rendering
+
+        async function yieldToUI() {
+            return new Promise(requestAnimationFrame);
+        }
+
+        // Optional: restrict value placement to a set of allowed cells.
+        // Keys are numbers; values are Sets of "r,c" strings.
+        const allowedCellsByValue = new Map();
+        // Example (uncomment + edit coordinates):
+        // allowedCellsByValue.set(12, new Set(['r,c', 'r,c']));
+
+        // Optional: prefill some cells with a specific value (non-locked).
+        // Each entry: { r, c, value }
+        const prefillCells = [];
+        // Example (uncomment + edit coordinates):
+        // prefillCells.push({ r: 0, c: 0, value: 12 });
+
+        // Optional: restrict 12 to one of a few exact candidate shapes.
+        // Coordinates are 0-indexed (row, col) in the solver/gridData coordinate system.
+        const candidate12Shapes = [
+            // Option A
+            new Set([
+                '3,9', '3,10', '3,11', '4,9', '5,9', '6,10', '8,7',
+                '5,10', '5,8', '5,7', '6,7', '7,7'
+            ]),
+            // Option B
+            new Set([
+                '3,9', '3,10', '3,11', '4,9', '5,9', '6,10', '8,7',
+                '6,9', '5,8', '5,7', '6,7', '7,7'
+            ]),
+            // Option C
+            new Set([
+                '3,9', '3,10', '3,11', '4,9', '5,9', '6,10', '8,7',
+                '5,10', '7,10', '8,10', '8,9', '8,8'
+            ]),
+            // Option D
+            new Set([
+                '3,9', '3,10', '3,11', '4,9', '5,9', '6,10', '8,7',
+                '6,9', '7,10', '8,10', '8,9', '8,8'
+            ])
+        ];
+
+        let current12Index = 0;
+        let forced12Index = null;
+
+        function getSelected12Index() {
+            const select = document.getElementById('debug-12-select');
+            if (!select) return 0;
+            const idx = parseInt(select.value, 10);
+            if (Number.isNaN(idx)) return 0;
+            return Math.max(0, Math.min(candidate12Shapes.length - 1, idx));
+        }
+
+        function isDebugModeOn() {
+            const checkbox = document.getElementById('debug-mode-toggle');
+            return !!(checkbox && checkbox.checked);
+        }
+
+        function isUiCheckOn() {
+            const checkbox = document.getElementById('ui-check-toggle');
+            return !!(checkbox && checkbox.checked);
+        }
+
+        function renderCandidate12Preview(index) {
+            if (!candidate12Shapes.length) return;
+            const safeIndex = ((index % candidate12Shapes.length) + candidate12Shapes.length) % candidate12Shapes.length;
+            const candidate = candidate12Shapes[safeIndex];
+            softResetImmediate(false);
+            for (const key of candidate) {
+                const [r, c] = key.split(',').map(Number);
+                if (gridData[r][c].number !== null && gridData[r][c].number !== '12') continue;
+                gridData[r][c].number = '12';
+                gridData[r][c].color = blobColors[11];
+                const cellElement = getCellElement(r, c);
+                if (cellElement) {
+                    cellElement.textContent = '12';
+                    cellElement.style.backgroundColor = blobColors[11];
+                    cellElement.draggable = true;
+                }
+            }
+            const statusEl = document.getElementById('solve-status');
+            if (statusEl) statusEl.textContent = `Previewing 12 config ${safeIndex + 1} of ${candidate12Shapes.length}`;
+        }
+
+        function syncDebugUiState() {
+            const debugOn = isDebugModeOn();
+            const panel = document.getElementById('debug-panel');
+            const nextBtn = document.getElementById('next-step-btn');
+            if (panel) panel.style.display = debugOn ? 'flex' : 'none';
+            if (nextBtn) nextBtn.disabled = !debugOn;
+
+            if (!debugOn) {
+                forced12Index = null;
+                if (debugStepResolver) {
+                    const resolve = debugStepResolver;
+                    debugStepResolver = null;
+                    resolve();
+                }
+                return;
+            }
+
+            current12Index = getSelected12Index();
+            forced12Index = current12Index;
+            if (isUiCheckOn()) {
+                renderCandidate12Preview(current12Index);
+            } else {
+                softResetImmediate(false);
+            }
+        }
+
+        async function waitForDebugStep(message = '') {
+            if (!isDebugModeOn()) return;
+            const statusEl = document.getElementById('solve-status');
+            if (statusEl) {
+                statusEl.textContent = message || 'Paused in debug mode. Click Next Step.';
+            }
+            await new Promise(resolve => {
+                debugStepResolver = resolve;
+            });
+        }
+
+        // Get all cells with a specific value
+        function getCellsWithValue(value) {
+            const cells = [];
+            for (let r = 0; r < gridData.length; r++) {
+                for (let c = 0; c < gridData[0].length; c++) {
+                    if (gridData[r][c].number === value.toString()) {
+                        cells.push([r, c]);
+                    }
+                }
+            }
+            return cells;
+        }
+
+        function isCandidateShapeCompatible(value) {
+            if (value !== 12 || candidate12Shapes.length === 0) return true;
+            const cells = getCellsWithValue(12);
+            const keys = new Set(cells.map(([r, c]) => `${r},${c}`));
+            const candidates = forced12Index !== null
+                ? [candidate12Shapes[forced12Index]]
+                : candidate12Shapes;
+            // Must be subset of at least one candidate
+            for (const candidate of candidates) {
+                let ok = true;
+                for (const k of keys) {
+                    if (!candidate.has(k)) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok) {
+                    // If complete, must match exactly
+                    if (keys.size === 12) {
+                        if (candidate.size !== 12) return false;
+                        if (keys.size !== candidate.size) return false;
+                        for (const k of candidate) {
+                            if (!keys.has(k)) return false;
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // (Shape-first solver helpers removed; we will use the original containment rule.)
+
+        // Count occurrences of a value
+        function countValue(value) {
+            return getCellsWithValue(value).length;
+        }
+
+        function getMaxNumberInGrid() {
+            let maxVal = 0;
+            for (let r = 0; r < gridData.length; r++) {
+                for (let c = 0; c < gridData[0].length; c++) {
+                    if (gridData[r][c].number !== null) {
+                        const v = parseInt(gridData[r][c].number);
+                        if (v > maxVal) maxVal = v;
+                    }
+                }
+            }
+            return maxVal;
+        }
+
+        function snapshotNumbers() {
+            return gridData.map(row => row.map(cell => cell.number));
+        }
+
+        function applySnapshotNumbers(snapshot) {
+            for (let r = 0; r < gridData.length; r++) {
+                for (let c = 0; c < gridData[0].length; c++) {
+                    const num = snapshot[r][c];
+                    gridData[r][c].number = num;
+                    gridData[r][c].color = num ? blobColors[parseInt(num) - 1] : null;
+                    const cell = getCellElement(r, c);
+                    if (cell) {
+                        if (num) {
+                            cell.textContent = num;
+                            cell.style.backgroundColor = blobColors[parseInt(num) - 1];
+                            cell.draggable = true;
+                        } else {
+                            cell.textContent = '';
+                            cell.style.backgroundColor = 'white';
+                            cell.draggable = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        function countFilledCells() {
+            let count = 0;
+            for (let r = 0; r < gridData.length; r++) {
+                for (let c = 0; c < gridData[0].length; c++) {
+                    if (gridData[r][c].number !== null) count++;
+                }
+            }
+            return count;
+        }
+
+        // Check if cells form a connected region using BFS
+        function isConnected(cells) {
+            if (cells.length === 0) return true;
+            if (cells.length === 1) return true;
+
+            const cellSet = new Set(cells.map(([r, c]) => `${r},${c}`));
+            const visited = new Set();
+            const queue = [cells[0]];
+            visited.add(cells[0].toString());
+
+            while (queue.length > 0) {
+                const [r, c] = queue.shift();
+
+                // Check 4 orthogonal neighbors
+                const neighbors = [[r-1, c], [r+1, c], [r, c-1], [r, c+1]];
+                for (const [nr, nc] of neighbors) {
+                    const key = [nr, nc].toString();
+                    if (!visited.has(key) && cellSet.has(`${nr},${nc}`)) {
+                        visited.add(key);
+                        queue.push([nr, nc]);
+                    }
+                }
+            }
+
+            return visited.size === cells.length;
+        }
+
+        // Normalize shape to start from (0,0)
+        function normalizeShape(cells) {
+            if (cells.length === 0) return [];
+
+            const minR = Math.min(...cells.map(([r, c]) => r));
+            const minC = Math.min(...cells.map(([r, c]) => c));
+
+            return cells.map(([r, c]) => [r - minR, c - minC]).sort((a, b) =>
+                a[0] !== b[0] ? a[0] - b[0] : a[1] - b[1]
+            );
+        }
+
+        // Get all 8 transformations (4 rotations × 2 for reflection)
+        function getAllTransformations(shape) {
+            const shapeKey = JSON.stringify(shape);
+            if (transformCache.has(shapeKey)) {
+                return transformCache.get(shapeKey);
+            }
+
+            const transformations = [];
+            let current = shape;
+
+            // 4 rotations
+            for (let i = 0; i < 4; i++) {
+                transformations.push(normalizeShape(current));
+                // Rotate 90 degrees clockwise: (r,c) -> (c, -r)
+                current = current.map(([r, c]) => [c, -r]);
+            }
+
+            // Reflect and 4 rotations
+            current = shape.map(([r, c]) => [r, -c]);
+            for (let i = 0; i < 4; i++) {
+                transformations.push(normalizeShape(current));
+                current = current.map(([r, c]) => [c, -r]);
+            }
+
+            // Remove duplicates
+            const unique = [];
+            const seen = new Set();
+            for (const trans of transformations) {
+                const key = JSON.stringify(trans);
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    unique.push(trans);
+                }
+            }
+
+            transformCache.set(shapeKey, unique);
+            return unique;
+        }
+
+        // Check if largerShape contains smallerShape (with transformations) - CACHED
+        function containsShape(largerCells, smallerCells) {
+            if (smallerCells.length === 0) return true;
+            if (largerCells.length < smallerCells.length) return false;
+
+            // Create cache key
+            const cacheKey = JSON.stringify([normalizeShape(largerCells), normalizeShape(smallerCells)]);
+            if (shapeCache.has(cacheKey)) {
+                return shapeCache.get(cacheKey);
+            }
+
+            const largerShape = normalizeShape(largerCells);
+            const transformations = getAllTransformations(normalizeShape(smallerCells));
+            const largerSet = new Set(largerShape.map(([r, c]) => `${r},${c}`));
+
+            // Try each transformation
+            for (const smallerShape of transformations) {
+                // Try all translations by aligning each smaller cell to each larger cell.
+                for (const [lr, lc] of largerShape) {
+                    for (const [sr0, sc0] of smallerShape) {
+                        const shiftR = lr - sr0;
+                        const shiftC = lc - sc0;
+                        let matches = true;
+                        for (const [sr, sc] of smallerShape) {
+                            const targetR = sr + shiftR;
+                            const targetC = sc + shiftC;
+                            if (!largerSet.has(`${targetR},${targetC}`)) {
+                                matches = false;
+                                break;
+                            }
+                        }
+                        if (matches) {
+                            shapeCache.set(cacheKey, true);
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            shapeCache.set(cacheKey, false);
+            return false;
+        }
+
+        function containsPrev(largerCells, smallerCells) {
+            if (containmentMode === 'subset') {
+                const largerSet = new Set(largerCells.map(([r, c]) => `${r},${c}`));
+                for (const [r, c] of smallerCells) {
+                    if (!largerSet.has(`${r},${c}`)) return false;
+                }
+                return true;
+            }
+            return containsShape(largerCells, smallerCells);
+        }
+
+        // Check if current state satisfies all constraints
+        function checkConstraints(debug = false) {
+            const maxNum = parseInt(document.getElementById('numbers').value);
+
+            // Check each number K
+            for (let k = 1; k <= maxNum; k++) {
+                const cells = getCellsWithValue(k);
+
+                // CRITICAL: Value K must appear EXACTLY K times
+                if (cells.length !== k) {
+                    if (debug) console.log(`❌ Value ${k} appears ${cells.length} times (need ${k})`);
+                    return false;
+                }
+
+                // Check connectivity
+                if (!isConnected(cells)) {
+                    if (debug) console.log(`❌ Value ${k} cells not connected`);
+                    return false;
+                }
+
+                // Check containment for K > 1 (unless skipped for testing)
+                if (k > 1 && !skipShapeCheck) {
+                    const prevCells = getCellsWithValue(k - 1);
+                    if (prevCells.length > 0 && !containsPrev(cells, prevCells)) {
+                        if (debug) console.log(`❌ Value ${k} doesn't contain shape of ${k-1}`);
+                        return false;
+                    }
+                }
+            }
+
+            if (debug) console.log('✅ All constraints satisfied!');
+            return true;
+        }
+
+        // Get cell element by row and col
+        function getCellElement(row, col) {
+            return document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+        }
+
+        // Get possible values for a cell based on constraints (lightweight check)
+        function getPossibleValues(r, c, maxNum) {
+            if (gridData[r][c].number !== null) return [];
+
+            const possible = [];
+
+            // For each possible value, do lightweight check
+            for (let val = 1; val <= maxNum; val++) {
+                // Allowed-cells constraint (if configured)
+                const allowed = allowedCellsByValue.get(val);
+                if (allowed && !allowed.has(`${r},${c}`)) {
+                    continue;
+                }
+
+                // Check if we already have K instances of value K
+                const currentCount = countValue(val);
+                if (currentCount >= val) {
+                    continue; // Can't add more of this value
+                }
+
+                // Temporarily place value
+                gridData[r][c].number = val.toString();
+
+                // Just check if it maintains connectivity (lightweight)
+                const cellsWithVal = getCellsWithValue(val);
+                if (isConnected(cellsWithVal)) {
+                    possible.push(val);
+                }
+
+                // Remove temporary placement
+                gridData[r][c].number = null;
+            }
+
+            return possible;
+        }
+
+        // Get distance to nearest filled cell
+        function getDistanceToFilled(r, c) {
+            let minDist = 999;
+            for (let i = 0; i < gridData.length; i++) {
+                for (let j = 0; j < gridData[0].length; j++) {
+                    if (gridData[i][j].number !== null) {
+                        const dist = Math.abs(r - i) + Math.abs(c - j);
+                        minDist = Math.min(minDist, dist);
+                    }
+                }
+            }
+            return minDist;
+        }
+
+        // Order cells by most constrained first + proximity to filled cells
+        function orderCellsByConstraints(emptyCells, maxNum) {
+            return emptyCells.map(cell => {
+                const [r, c] = cell;
+                const possible = getPossibleValues(r, c, maxNum);
+                const distance = getDistanceToFilled(r, c);
+                return {
+                    cell,
+                    possibleCount: possible.length,
+                    possible,
+                    distance
+                };
+            }).sort((a, b) => {
+                // Primary: fewer possible values
+                if (a.possibleCount !== b.possibleCount) {
+                    return a.possibleCount - b.possibleCount;
+                }
+                // Secondary: closer to filled cells
+                return a.distance - b.distance;
+            });
+        }
+
+        // Find cells that must be a certain value (constraint propagation)
+        function propagateConstraints(maxNum) {
+            // Disabled for now - can be enabled later for optimization
+            // Currently keeping it simple to ensure correctness first
+            return;
+        }
+
+        // Check if current state can still lead to valid solution (feasibility)
+        function isFeasible(maxNum, remainingCells, debug = false) {
+            // For each value, check if we can still satisfy count constraint
+            for (let k = 1; k <= maxNum; k++) {
+                const currentCount = countValue(k);
+                const needed = k - currentCount;
+
+                // If we need more but have already exceeded, fail
+                if (currentCount > k) {
+                    if (debug) console.log(`Feasibility fail: value ${k} has ${currentCount} cells (max ${k})`);
+                    return false;
+                }
+
+                // If we need more but don't have enough empty cells, fail
+                if (needed > remainingCells) {
+                    if (debug) console.log(`Feasibility fail: value ${k} needs ${needed} more cells, only ${remainingCells} remaining`);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Calculate how many cells we MUST fill
+        function getRequiredCells(maxNum) {
+            let total = 0;
+            for (let k = 1; k <= maxNum; k++) {
+                const currentCount = countValue(k);
+                const needed = Math.max(0, k - currentCount);
+                total += needed;
+            }
+            return total;
+        }
+
+        // Visual delay
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Get empty cells adjacent to a set of cells
+        function getAdjacentEmptyCells(cells) {
+            const adjacent = new Set();
+            const cellSet = new Set(cells.map(([r, c]) => `${r},${c}`));
+
+            for (const [r, c] of cells) {
+                const neighbors = [[r-1, c], [r+1, c], [r, c-1], [r, c+1]];
+                for (const [nr, nc] of neighbors) {
+                    if (nr >= 0 && nr < gridData.length &&
+                        nc >= 0 && nc < gridData[0].length &&
+                        gridData[nr][nc].number === null &&
+                        !cellSet.has(`${nr},${nc}`)) {
+                        adjacent.add(`${nr},${nc}`);
+                    }
+                }
+            }
+
+            return Array.from(adjacent).map(s => s.split(',').map(Number));
+        }
+
+        // NEW APPROACH: Solve number-by-number (region selection per value)
+        async function solvePuzzle() {
+            const rows = gridData.length;
+            const cols = gridData[0].length;
+            const maxNum = parseInt(document.getElementById('numbers').value);
+            const solveBtn = document.getElementById('solve-btn');
+            const statusEl = document.getElementById('solve-status');
+            const renderDuringSolve = isDebugModeOn();
+            const formatSteps = () => `${stepCount.toLocaleString()} / ${maxSteps.toLocaleString()}`;
+            const updateSolveUi = (message = '') => {
+                if (solveBtn) {
+                    solveBtn.textContent = `Stop (${stepCount.toLocaleString()})`;
+                }
+                if (statusEl) {
+                    statusEl.textContent = message
+                        ? `${message} | steps ${formatSteps()}`
+                        : `Solving... steps ${formatSteps()}`;
+                }
+            };
+
+            console.log(`Grid: ${rows}x${cols}, Max number: ${maxNum}`);
+            shapeCache.clear();
+            // Clear any non-locked cells to avoid leftover state.
+            // In UI Check mode, keep the selected 12 configuration rendered.
+            if (isDebugModeOn() && isUiCheckOn()) {
+                renderCandidate12Preview(getSelected12Index());
+            } else if (renderDuringSolve) {
+                softResetImmediate(false);
+            } else {
+                softResetDataOnly();
+            }
+
+            // Apply any prefills (non-locked) before solving
+            if (prefillCells.length > 0) {
+                for (const { r, c, value } of prefillCells) {
+                    if (r < 0 || r >= rows || c < 0 || c >= cols) {
+                        console.warn('Prefill out of bounds', { r, c, value });
+                        continue;
+                    }
+                    if (gridData[r][c].number !== null && gridData[r][c].number !== value.toString()) {
+                        console.error('Prefill conflict at', r, c, 'existing', gridData[r][c].number, 'new', value);
+                        return false;
+                    }
+                    gridData[r][c].number = value.toString();
+                    gridData[r][c].color = blobColors[value - 1];
+                    const cellElement = getCellElement(r, c);
+                    if (cellElement) {
+                        cellElement.textContent = value;
+                        cellElement.style.backgroundColor = blobColors[value - 1];
+                        cellElement.draggable = true;
+                    }
+                }
+            }
+
+            const allKeys = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    allKeys.push(`${r},${c}`);
+                }
+            }
+
+            const neighborsByKey = new Map();
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const key = `${r},${c}`;
+                    const list = [];
+                    if (r > 0) list.push(`${r - 1},${c}`);
+                    if (r < rows - 1) list.push(`${r + 1},${c}`);
+                    if (c > 0) list.push(`${r},${c - 1}`);
+                    if (c < cols - 1) list.push(`${r},${c + 1}`);
+                    neighborsByKey.set(key, list);
+                }
+            }
+
+            const fixedByNum = Array(maxNum + 1).fill(null).map(() => new Set());
+            const occupied = new Map(); // key -> number
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (gridData[r][c].number !== null) {
+                        const v = parseInt(gridData[r][c].number);
+                        if (v <= maxNum) {
+                            const key = `${r},${c}`;
+                            fixedByNum[v].add(key);
+                            occupied.set(key, v);
+                        }
+                    }
+                }
+            }
+
+            for (let k = 1; k <= maxNum; k++) {
+                if (fixedByNum[k].size > k) {
+                    console.error(`Invalid: value ${k} has ${fixedByNum[k].size} fixed cells (need ${k})`);
+                    return false;
+                }
+            }
+
+            const numberOrder = Array.from({ length: maxNum }, (_, i) => i + 1);
+            const shapes = Array(maxNum + 1).fill(null);
+            const resolvedNumbers = new Set();
+            const shapeCellsCache = new Map();
+
+            function shapeSetToCells(shapeSet) {
+                const key = Array.from(shapeSet).sort().join('|');
+                if (shapeCellsCache.has(key)) {
+                    return shapeCellsCache.get(key);
+                }
+                const cells = Array.from(shapeSet).map(s => s.split(',').map(Number));
+                shapeCellsCache.set(key, cells);
+                return cells;
+            }
+
+            function availableSetFor(k) {
+                const set = new Set();
+                for (const key of allKeys) {
+                    const occ = occupied.get(key);
+                    if (occ === undefined || occ === k) set.add(key);
+                }
+                return set;
+            }
+
+            function sameComponent(avail, start, requiredSet) {
+                const queue = [start];
+                const seen = new Set([start]);
+                while (queue.length > 0) {
+                    const cur = queue.shift();
+                    for (const nb of neighborsByKey.get(cur)) {
+                        if (!seen.has(nb) && avail.has(nb)) {
+                            seen.add(nb);
+                            queue.push(nb);
+                        }
+                    }
+                }
+                for (const req of requiredSet) {
+                    if (!seen.has(req)) return false;
+                }
+                return true;
+            }
+
+            function buildExpansionTemplateMap(shapeSet) {
+                const base = normalizeShape(shapeSetToCells(shapeSet));
+                const baseSet = new Set(base.map(([r, c]) => `${r},${c}`));
+                const out = new Map();
+
+                for (const [r, c] of base) {
+                    const neighbors = [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]];
+                    for (const [nr, nc] of neighbors) {
+                        const key = `${nr},${nc}`;
+                        if (baseSet.has(key)) continue;
+                        const expanded = normalizeShape([...base, [nr, nc]]);
+                        out.set(JSON.stringify(expanded), expanded);
+                    }
+                }
+                return out;
+            }
+
+            function buildReductionTemplateMap(shapeSet) {
+                const base = normalizeShape(shapeSetToCells(shapeSet));
+                const out = new Map();
+
+                for (let i = 0; i < base.length; i++) {
+                    const reduced = base.filter((_, idx) => idx !== i);
+                    if (!isConnected(reduced)) continue;
+                    const norm = normalizeShape(reduced);
+                    out.set(JSON.stringify(norm), norm);
+                }
+                return out;
+            }
+
+            function intersectTemplateMaps(a, b) {
+                const out = new Map();
+                for (const [key, shape] of a) {
+                    if (b.has(key)) out.set(key, shape);
+                }
+                return out;
+            }
+
+            function* generateShapesFromTemplates(k, requiredSet, templateMap) {
+                const allowed = allowedCellsByValue.get(k) || null;
+                const requiredArr = Array.from(requiredSet).map(s => s.split(',').map(Number));
+                const hasRequired = requiredArr.length > 0;
+                const [anchorR, anchorC] = hasRequired ? requiredArr[0] : [0, 0];
+                const seenPlacements = new Set();
+
+                for (const template of templateMap.values()) {
+                    const transforms = getAllTransformations(template);
+                    for (const trans of transforms) {
+                        const shifts = [];
+                        if (hasRequired) {
+                            for (const [tr, tc] of trans) {
+                                shifts.push([anchorR - tr, anchorC - tc]);
+                            }
+                        } else {
+                            const maxR = Math.max(...trans.map(([r]) => r));
+                            const maxC = Math.max(...trans.map(([, c]) => c));
+                            for (let dr = 0; dr <= rows - 1 - maxR; dr++) {
+                                for (let dc = 0; dc <= cols - 1 - maxC; dc++) {
+                                    shifts.push([dr, dc]);
+                                }
+                            }
+                        }
+
+                        for (const [dr, dc] of shifts) {
+                            const placedKeys = [];
+                            let ok = true;
+                            for (const [r, c] of trans) {
+                                const rr = r + dr;
+                                const cc = c + dc;
+                                if (rr < 0 || rr >= rows || cc < 0 || cc >= cols) {
+                                    ok = false;
+                                    break;
+                                }
+                                const key = `${rr},${cc}`;
+                                if (allowed && !allowed.has(key)) {
+                                    ok = false;
+                                    break;
+                                }
+                                const occ = occupied.get(key);
+                                if (occ !== undefined && occ !== k) {
+                                    ok = false;
+                                    break;
+                                }
+                                placedKeys.push(key);
+                            }
+                            if (!ok) continue;
+
+                            const placedSet = new Set(placedKeys);
+                            for (const req of requiredSet) {
+                                if (!placedSet.has(req)) {
+                                    ok = false;
+                                    break;
+                                }
+                            }
+                            if (!ok) continue;
+
+                            const placementKey = Array.from(placedSet).sort().join('|');
+                            if (seenPlacements.has(placementKey)) continue;
+                            seenPlacements.add(placementKey);
+                            yield placedSet;
+                        }
+                    }
+                }
+            }
+
+            function* generateShapesFor(k) {
+                const requiredSet = fixedByNum[k];
+                if (requiredSet.size > k) return;
+
+                if (k === 12 && candidate12Shapes.length > 0) {
+                    const indices = forced12Index !== null ? [forced12Index] : candidate12Shapes.map((_, idx) => idx);
+                    for (const idx of indices) {
+                        const candidate = candidate12Shapes[idx];
+                        let ok = true;
+                        for (const req of requiredSet) {
+                            if (!candidate.has(req)) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                        if (!ok) continue;
+                        let conflict = false;
+                        for (const key of candidate) {
+                            const occ = occupied.get(key);
+                            if (occ !== undefined && occ !== k) {
+                                conflict = true;
+                                break;
+                            }
+                        }
+                        if (!conflict) yield new Set(candidate);
+                    }
+                    return;
+                }
+
+                // Fast path: if neighbor shapes are known, use one-step shape transitions
+                // instead of full connected-region enumeration.
+                let lowerTemplates = null;
+                let upperTemplates = null;
+                if (k > 1 && shapes[k - 1]) {
+                    lowerTemplates = buildExpansionTemplateMap(shapes[k - 1]);
+                }
+                if (k < maxNum && shapes[k + 1]) {
+                    upperTemplates = buildReductionTemplateMap(shapes[k + 1]);
+                }
+                if (lowerTemplates !== null || upperTemplates !== null) {
+                    let templateMap = null;
+                    if (lowerTemplates && upperTemplates) {
+                        templateMap = intersectTemplateMaps(lowerTemplates, upperTemplates);
+                    } else {
+                        templateMap = lowerTemplates || upperTemplates;
+                    }
+                    if (!templateMap || templateMap.size === 0) return;
+                    yield* generateShapesFromTemplates(k, requiredSet, templateMap);
+                    return;
+                }
+
+                const avail = availableSetFor(k);
+                for (const req of requiredSet) {
+                    if (!avail.has(req)) return;
+                }
+
+                const requiredCount = requiredSet.size;
+                const requiredArr = Array.from(requiredSet);
+                const startCandidates = requiredArr.length > 0 ? [requiredArr[0]] : Array.from(avail);
+
+                const seen = new Set();
+
+                for (const start of startCandidates) {
+                    if (!avail.has(start)) continue;
+                    if (requiredArr.length > 0 && !sameComponent(avail, start, requiredSet)) continue;
+
+                    const initialShape = new Set([start]);
+                    const initialFrontier = new Set();
+                    for (const nb of neighborsByKey.get(start)) {
+                        if (avail.has(nb) && !initialShape.has(nb)) initialFrontier.add(nb);
+                    }
+                    const initialReqInShape = requiredSet.has(start) ? 1 : 0;
+
+                    function* dfs(shape, frontier, reqInShape) {
+                        const missingReq = requiredCount - reqInShape;
+                        const remainingSlots = k - shape.size;
+                        if (missingReq > remainingSlots) return;
+
+                        const key = Array.from(shape).sort().join('|');
+                        if (seen.has(key)) return;
+                        seen.add(key);
+
+                        if (shape.size === k) {
+                            if (missingReq === 0) yield new Set(shape);
+                            return;
+                        }
+
+                        const frontierArr = Array.from(frontier);
+                        frontierArr.sort((a, b) => {
+                            const ar = requiredSet.has(a) ? 0 : 1;
+                            const br = requiredSet.has(b) ? 0 : 1;
+                            if (ar !== br) return ar - br;
+                            return a < b ? -1 : a > b ? 1 : 0;
+                        });
+
+                        for (const cell of frontierArr) {
+                            if (!avail.has(cell)) continue;
+                            const newShape = new Set(shape);
+                            newShape.add(cell);
+                            const newFrontier = new Set(frontier);
+                            newFrontier.delete(cell);
+                            for (const nb of neighborsByKey.get(cell)) {
+                                if (avail.has(nb) && !newShape.has(nb)) newFrontier.add(nb);
+                            }
+                            const newReqInShape = reqInShape + (requiredSet.has(cell) ? 1 : 0);
+                            yield* dfs(newShape, newFrontier, newReqInShape);
+                        }
+                    }
+
+                    yield* dfs(initialShape, initialFrontier, initialReqInShape);
+                }
+            }
+
+            function placeShape(k, shapeSet) {
+                const added = [];
+                for (const key of shapeSet) {
+                    const occ = occupied.get(key);
+                    if (occ !== undefined && occ !== k) return null;
+                }
+                for (const key of shapeSet) {
+                    if (occupied.get(key) !== k) {
+                        occupied.set(key, k);
+                        added.push(key);
+                    }
+                    const [r, c] = key.split(',').map(Number);
+                    gridData[r][c].number = k.toString();
+                    gridData[r][c].color = blobColors[k - 1];
+                    if (renderDuringSolve) {
+                        const cell = getCellElement(r, c);
+                        if (cell) {
+                            cell.textContent = k.toString();
+                            cell.style.backgroundColor = blobColors[k - 1];
+                            cell.draggable = true;
+                        }
+                    }
+                }
+                return added;
+            }
+
+            function removeShape(k, added) {
+                for (const key of added) {
+                    occupied.delete(key);
+                    const [r, c] = key.split(',').map(Number);
+                    if (!gridData[r][c].locked) {
+                        gridData[r][c].number = null;
+                        gridData[r][c].color = null;
+                        if (renderDuringSolve) {
+                            const cell = getCellElement(r, c);
+                            if (cell) {
+                                cell.textContent = '';
+                                cell.style.backgroundColor = 'white';
+                                cell.draggable = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Pre-resolve any number that is already complete in the starting grid.
+            for (let k = 1; k <= maxNum; k++) {
+                if (fixedByNum[k].size === k) {
+                    const completeShape = new Set(fixedByNum[k]);
+                    if (!isConnected(shapeSetToCells(completeShape))) {
+                        console.error(`Invalid starting state: value ${k} has ${k} cells but is disconnected.`);
+                        return false;
+                    }
+                    shapes[k] = completeShape;
+                    resolvedNumbers.add(k);
+                }
+            }
+
+            // If a 12 config is selected, pin it so it never disappears during solving.
+            if (forced12Index !== null && candidate12Shapes.length > 0) {
+                const forced = candidate12Shapes[forced12Index];
+                if (!forced) {
+                    console.error(`Invalid 12 config index: ${forced12Index}`);
+                    return false;
+                }
+                for (const req of fixedByNum[12]) {
+                    if (!forced.has(req)) {
+                        console.error(`Selected 12 config ${forced12Index + 1} does not include locked 12 cell ${req}`);
+                        return false;
+                    }
+                }
+                const added = placeShape(12, forced);
+                if (!added) {
+                    console.error(`Selected 12 config ${forced12Index + 1} conflicts with existing locked cells.`);
+                    return false;
+                }
+                shapes[12] = new Set(forced);
+                resolvedNumbers.add(12);
+            }
+
+            const unresolved = new Set(numberOrder.filter(k => !resolvedNumbers.has(k)));
+            const unresolvedArr = Array.from(unresolved);
+            const has12Context = maxNum >= 12 && (fixedByNum[12].size > 0 || shapes[12] !== null);
+            const pivot = has12Context
+                ? 12
+                : (unresolvedArr.length > 0
+                    ? unresolvedArr.reduce((best, k) =>
+                        fixedByNum[k].size > fixedByNum[best].size ? k : best, unresolvedArr[0])
+                    : 1);
+
+            function remainingNeededForUnresolved() {
+                let total = 0;
+                for (const k of unresolved) {
+                    total += (k - fixedByNum[k].size);
+                }
+                return total;
+            }
+
+            function compareNumberPriority(a, b) {
+                // Only two selectors as requested:
+                // 1) Closeness to 12 (or pivot fallback), 2) most-filled.
+                const aPivotDist = Math.abs(a - pivot);
+                const bPivotDist = Math.abs(b - pivot);
+                if (aPivotDist !== bPivotDist) return aPivotDist - bPivotDist;
+
+                const aRatio = fixedByNum[a].size / a;
+                const bRatio = fixedByNum[b].size / b;
+                if (aRatio !== bRatio) return bRatio - aRatio;
+
+                const aMissing = a - fixedByNum[a].size;
+                const bMissing = b - fixedByNum[b].size;
+                if (aMissing !== bMissing) return aMissing - bMissing;
+
+                return a - b;
+            }
+
+            function selectNextNumber() {
+                const ranked = Array.from(unresolved);
+                ranked.sort((a, b) => compareNumberPriority(a, b));
+                return ranked[0];
+            }
+
+            function candidateRespectsKnownRelations(k, candidate) {
+                const candCells = shapeSetToCells(candidate);
+
+                // Immediate lower relation: k must contain (k-1) when known/fixed.
+                if (k > 1) {
+                    if (shapes[k - 1]) {
+                        const lowerCells = shapeSetToCells(shapes[k - 1]);
+                        if (!containsPrev(candCells, lowerCells)) return false;
+                    } else if (fixedByNum[k - 1].size > 0) {
+                        const lowerFixedCells = shapeSetToCells(fixedByNum[k - 1]);
+                        if (!containsPrev(candCells, lowerFixedCells)) return false;
+                    }
+                }
+
+                // Immediate upper relation: (k+1) must contain k when upper is already solved.
+                if (k < maxNum && shapes[k + 1]) {
+                    const upperCells = shapeSetToCells(shapes[k + 1]);
+                    if (!containsPrev(upperCells, candCells)) return false;
+                }
+
+                return true;
+            }
+
+            async function solveNumbers(depth = 0) {
+                if (!isSolving) return false;
+                if (unresolved.size === 0) return true;
+                let sliceStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+                const maybeYield = async (message = '') => {
+                    const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+                    if (now - sliceStart < uiTimeSliceMs) return true;
+                    if (message) updateSolveUi(message);
+                    await yieldToUI();
+                    if (!isSolving) return false;
+                    sliceStart = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+                    return true;
+                };
+
+                stepCount++;
+                if (stepCount > maxSteps) return false;
+                if (isDebugModeOn() || stepCount % 200 === 0) {
+                    updateSolveUi('Searching');
+                }
+
+                const freeCells = rows * cols - occupied.size;
+                if (freeCells < remainingNeededForUnresolved()) return false;
+
+                const bestK = selectNextNumber();
+                updateSolveUi(`Generating candidates for K=${bestK} (depth ${depth})`);
+                await yieldToUI();
+                if (!isSolving) return false;
+                if (stepCount % 200 === 0) {
+                    updateSolveUi(`Solving K=${bestK}`);
+                    console.log(`[progress] step=${stepCount} depth=${depth} K=${bestK} unresolved=${unresolved.size}`);
+                    await yieldToUI();
+                }
+
+                unresolved.delete(bestK);
+                let hadCandidate = false;
+                let triedForK = 0;
+                let generatedForK = 0;
+                for (const candidate of generateShapesFor(bestK)) {
+                    generatedForK++;
+                    if (!(await maybeYield(`Enumerating K=${bestK}, generated ${generatedForK}`))) {
+                        unresolved.add(bestK);
+                        return false;
+                    }
+                    if (generatedForK % 200 === 0) {
+                        if (isDebugModeOn() || stepCount % 200 === 0) {
+                            updateSolveUi(`Enumerating K=${bestK}, generated ${generatedForK}`);
+                        }
+                        await yieldToUI();
+                        if (!isSolving) {
+                            unresolved.add(bestK);
+                            return false;
+                        }
+                    }
+                    if (!candidateRespectsKnownRelations(bestK, candidate)) continue;
+                    hadCandidate = true;
+                    triedForK++;
+
+                    stepCount++;
+                    if (stepCount > maxSteps) {
+                        unresolved.add(bestK);
+                        return false;
+                    }
+                    if (isDebugModeOn() || stepCount % 200 === 0) {
+                        updateSolveUi(`Trying K=${bestK}, option ${triedForK}`);
+                        if (stepCount % 200 === 0) {
+                            await yieldToUI();
+                        }
+                    }
+                    if (!(await maybeYield(`Trying K=${bestK}, option ${triedForK}`))) {
+                        unresolved.add(bestK);
+                        return false;
+                    }
+
+                    if (isDebugModeOn()) {
+                        await waitForDebugStep(
+                            `Step ${stepCount}: trying K=${bestK}, option ${triedForK}, depth=${depth}`
+                        );
+                        if (!isSolving) {
+                            unresolved.add(bestK);
+                            return false;
+                        }
+                    }
+
+                    const added = placeShape(bestK, candidate);
+                    if (!added) continue;
+                    shapes[bestK] = new Set(candidate);
+                    if (solveDelay > 0) await sleep(solveDelay);
+
+                    const ok = await solveNumbers(depth + 1);
+                    if (ok) return true;
+
+                    removeShape(bestK, added);
+                    shapes[bestK] = null;
+                }
+                if (!hadCandidate) {
+                    if (isDebugModeOn() || stepCount % 200 === 0) {
+                        updateSolveUi(`Pruned at K=${bestK}`);
+                    }
+                    if (isDebugModeOn()) {
+                        console.log(`[prune] depth=${depth}, K=${bestK}, candidates=0`);
+                    }
+                }
+                unresolved.add(bestK);
+                return false;
+            }
+
+            stepCount = 0;
+            const result = await solveNumbers(0);
+            return result;
+        }
+
+        // Validate current state
+        function handleValidate() {
+            console.log('=== Validating Current State ===');
+            const maxNum = parseInt(document.getElementById('numbers').value);
+
+            // Check each value
+            for (let k = 1; k <= maxNum; k++) {
+                const cells = getCellsWithValue(k);
+                console.log(`Value ${k}: ${cells.length} cells`, cells);
+            }
+
+            const isValid = checkConstraints(true);
+
+            if (isValid) {
+                alert('✅ Current state is VALID!\nAll constraints satisfied.');
+            } else {
+                alert('❌ Current state is INVALID.\nCheck console (F12) for details.');
+            }
+        }
+
+        // Solve button handler
+        async function runSolve({ silent = false } = {}) {
+            if (isSolving) {
+                isSolving = false;
+                document.getElementById('solve-btn').textContent = 'Solve';
+                const statusEl = document.getElementById('solve-status');
+                if (statusEl) {
+                    statusEl.textContent = `Stopped. Steps tried: ${stepCount.toLocaleString()}`;
+                }
+                if (debugStepResolver) {
+                    const resolve = debugStepResolver;
+                    debugStepResolver = null;
+                    resolve();
+                }
+                return false;
+            }
+
+            // First validate the starting state
+            console.log('=== Starting State ===');
+            const maxNumInput = parseInt(document.getElementById('numbers').value);
+            const maxLocked = getMaxNumberInGrid();
+            if (maxLocked > 0 && maxNumInput > maxLocked) {
+                console.warn(`Numbers set to ${maxNumInput} but max locked is ${maxLocked}. Using ${maxLocked}.`);
+                document.getElementById('numbers').value = maxLocked;
+            }
+            const maxNum = parseInt(document.getElementById('numbers').value);
+            for (let k = 1; k <= maxNum; k++) {
+                const cells = getCellsWithValue(k);
+                if (cells.length > 0) {
+                    console.log(`Value ${k}: ${cells.length} cells (need ${k})`);
+                }
+            }
+
+            const debugOn = isDebugModeOn();
+            const selectedIdx = getSelected12Index();
+            let candidateOrder = [null];
+            if (candidate12Shapes.length > 0) {
+                candidateOrder = debugOn
+                    ? [selectedIdx]
+                    : candidate12Shapes.map((_, idx) => idx);
+            }
+            forced12Index = debugOn ? selectedIdx : null;
+
+            isSolving = true;
+            stepCount = 0;
+            const solveBtn = document.getElementById('solve-btn');
+            const statusEl = document.getElementById('solve-status');
+            solveBtn.textContent = 'Stop';
+            if (debugOn && statusEl) {
+                statusEl.textContent = 'Debug run started. Steps: 0. Click Next Step.';
+            } else if (statusEl) {
+                statusEl.textContent = 'Solving... steps 0';
+            }
+            await yieldToUI();
+
+            const startTime = Date.now();
+            let result = false;
+            let totalSteps = 0;
+            console.log(`[solve] started debug=${debugOn} candidate12Configs=${candidateOrder.length}`);
+            for (const idx of candidateOrder) {
+                if (!isSolving) break;
+                forced12Index = idx;
+                const configLabel = idx === null ? 'none' : `${idx + 1}/${candidateOrder.length}`;
+                console.log(`[solve] trying 12-config=${configLabel}`);
+                if (statusEl && idx !== null && !debugOn) {
+                    statusEl.textContent = `Trying 12 config ${idx + 1} of ${candidateOrder.length} | steps ${stepCount.toLocaleString()}`;
+                }
+                const attempt = await solvePuzzle();
+                totalSteps += stepCount;
+                console.log(`[solve] finished 12-config=${configLabel} solved=${attempt} stepsThisAttempt=${stepCount} totalSteps=${totalSteps}`);
+                if (statusEl && idx !== null && !debugOn) {
+                    statusEl.textContent = `Finished 12 config ${idx + 1} of ${candidateOrder.length} | total steps ${totalSteps.toLocaleString()}`;
+                }
+                if (attempt) {
+                    result = true;
+                    break;
+                }
+            }
+            stepCount = totalSteps;
+            const endTime = Date.now();
+            console.log(`[solve] completed solved=${result} steps=${stepCount} elapsedMs=${endTime - startTime}`);
+
+            isSolving = false;
+            solveBtn.textContent = 'Solve';
+
+            // Non-debug mode keeps UI static while searching; render only on success.
+            if (result && !debugOn) {
+                applySnapshotNumbers(snapshotNumbers());
+            }
+
+            if (!silent) {
+                if (result) {
+                    alert(`Solution found!\nSteps: ${stepCount}\nTime: ${((endTime - startTime) / 1000).toFixed(2)}s`);
+                    if (statusEl) {
+                        statusEl.textContent = `Solved in ${stepCount.toLocaleString()} steps (${((endTime - startTime) / 1000).toFixed(2)}s)`;
+                    }
+                    saveState();
+                } else if (stepCount >= maxSteps) {
+                    alert(`Reached maximum steps (${maxSteps}).\nTry with fewer empty cells or simpler constraints.`);
+                    if (statusEl) {
+                        statusEl.textContent = `Stopped at max steps: ${stepCount.toLocaleString()}`;
+                    }
+                } else {
+                    alert(`No solution found.\nSteps tried: ${stepCount}\n\nCheck console (F12) for constraint details.`);
+                    if (statusEl) {
+                        statusEl.textContent = `No solution. Steps tried: ${stepCount.toLocaleString()}`;
+                    }
+                }
+            }
+
+            if (stepCount >= maxSteps) {
+                lastStopReason = `Reached max steps (${maxSteps})`;
+            } else if (!result) {
+                lastStopReason = 'No solution found';
+            } else {
+                lastStopReason = 'Solved';
+            }
+
+            // Clear cache to free memory
+            shapeCache.clear();
+            transformCache.clear();
+            return result;
+        }
+
+        async function handleSolve() {
+            return await runSolve({ silent: false });
+        }
+
+        function handleDebugToggle() {
+            syncDebugUiState();
+        }
+
+        function handleConfigSelectChange() {
+            current12Index = getSelected12Index();
+            forced12Index = current12Index;
+            if (isDebugModeOn() && isUiCheckOn()) {
+                renderCandidate12Preview(current12Index);
+            }
+        }
+
+        function handleUiCheckToggle() {
+            syncDebugUiState();
+        }
+
+        function handleNextStep() {
+            if (!isDebugModeOn()) return;
+
+            if (!isSolving) {
+                handleSolve();
+                return;
+            }
+
+            if (debugStepResolver) {
+                const resolve = debugStepResolver;
+                debugStepResolver = null;
+                resolve();
+            }
+        }
+
+        // ==================== END SOLVER FUNCTIONS ====================
 
         // Modal functionality
         const infoIcon = document.getElementById('info-icon');
@@ -871,6 +2368,12 @@
         });
         document.getElementById('soft-reset').addEventListener('click', softReset);
         document.getElementById('hard-reset').addEventListener('click', hardReset);
+        document.getElementById('solve-btn').addEventListener('click', handleSolve);
+        document.getElementById('validate-btn').addEventListener('click', handleValidate);
+        document.getElementById('debug-mode-toggle').addEventListener('change', handleDebugToggle);
+        document.getElementById('debug-12-select').addEventListener('change', handleConfigSelectChange);
+        document.getElementById('ui-check-toggle').addEventListener('change', handleUiCheckToggle);
+        document.getElementById('next-step-btn').addEventListener('click', handleNextStep);
 
         // Regenerate grid on window resize to maintain fit
         let resizeTimer;
@@ -883,6 +2386,7 @@
         loadState();
         generateBlobs();
         generateGrid();
+        syncDebugUiState();
     </script>
 </body>
 </html>
